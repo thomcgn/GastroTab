@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1043715532186",
+    "project_id": "gastrotab-1daf6",
+    "storage_bucket": "gastrotab-1daf6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043715532186:android:cd476ea64b71ff636fc623",
+        "android_client_info": {
+          "package_name": "com.thomkorg.gastrotab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1043715532186-b9obcpg7upev1dpneqvggvnnpaab6htp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwyIjgl5C3aDNaayGz5_osbDcIIKS7RbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1043715532186-b9obcpg7upev1dpneqvggvnnpaab6htp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
