@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -23,10 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -44,7 +42,7 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         auth = Firebase.auth
-
+        auth.signOut()
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -129,7 +127,12 @@ class LoginActivity : ComponentActivity() {
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = null
                 )
-            }
+
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
         )
     }
 
@@ -146,7 +149,24 @@ class LoginActivity : ComponentActivity() {
             placeholder = { Text(text = "Passwort") },
             colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Send
+            ), keyboardActions = KeyboardActions(
+                onSend = {
+                    if (model.userName.isNotBlank() && model.userPassword.isNotBlank()) {
+                        switchToMain()
+                    } else {
+
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Fill in both Fields first!",
+                            Toast.LENGTH_SHORT
+                        )
+                    }
+                }
+            ),
+
             trailingIcon = {
                 val image = if (passwordVisible)
                     Icons.Filled.Visibility
@@ -170,22 +190,20 @@ class LoginActivity : ComponentActivity() {
     }
 
     fun switchToMain() {
-        if (auth.currentUser != null) {
-            intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        } else {
-
-            auth.signInWithEmailAndPassword(model.userName, model.userPassword)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(this, "Benutzer oder Passwort falsch!", Toast.LENGTH_LONG)
-                            .show()
-                    }
+        auth.signInWithEmailAndPassword(model.userName, model.userPassword)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    intent.putExtra("user_id", FirebaseAuth.getInstance().currentUser!!.uid)
+                    intent.putExtra("email_id", model.userName)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, "Benutzer oder Passwort falsch!", Toast.LENGTH_LONG)
+                        .show()
                 }
-        }
-
+            }
     }
+
 }
